@@ -2,5 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-
+.DS_Store
 ~/GitHub/stto-adapt-div-elev/data/all_hist_clim_wider.csv
