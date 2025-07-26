@@ -19,7 +19,7 @@ morph_climate = morph %>%
 
 morph_climate_for_cca = morph_climate |>
   # remove non-numerical data for dataframe used as input to cca
-  dplyr::select(-c(PC1, PC2, ID, pop, site))
+  dplyr::select(-c(PC1.x, PC1.y, PC2.x, PC2.y, ID, pop, site))
 
 morph_for_cca = morph_climate_for_cca |>
   dplyr::select(lf_thickness:sla) |>
@@ -34,12 +34,16 @@ scale()
 # define input matrices as dataframes
 morph_for_cca_df = data.frame(morph_for_cca)
 climate_for_cca_df = data.frame(climate_for_cca)
+morphology = morph_for_cca_df
+climate = climate_for_cca_df
+
 
 # Run CCA ----
 result.cca = rcc(morph_for_cca_df, climate_for_cca_df) # run the CCA method
 
 # plot projection into canonical variate subspace
-plotIndiv(result.cca) 
+plotIndiv(result.cca, rep.space = "XY-variate") 
+ggsave("indivplot.png")
 # plot original variables' correlation with canonical variates
 vardata = plotVar(result.cca)
 
