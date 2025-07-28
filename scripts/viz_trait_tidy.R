@@ -59,8 +59,11 @@ viz_traits_tidy = function(fixedpost, popefpost, Gpost, THpost, traits,
   # Create color palette. Implemented as it is from driftsel package.
   # Change the logic as necessary and keep the colours consistent across plots
   n_pop = nrow(popef)
-  colors = c("#000000", "#FF0000", "#00FF00", "#0000FF", "#FF00FF", 
-              "#00FFFF", "#FFA500", "#800080", "#7FFF00")[1:min(n_pop, 9)]
+  # colors added manually here to reflect hexcodes used in Qpc plots:
+  colors = c("#000",   "#CF5A6A",  "#7ACC5B",  "#428EDE",   "#6EDFE2",  "#BB27B3",  "#F2A93B",  "#9F9F9F",  "#A1FC4F", "#000",  "#CF596A",  "#7DCE62",  "#4995E1",  "#68DCE0",  "#BC2AB5",  "#F2A93B",  "#9F9F9F", "#88FD20", "#000", "#CC5364")[1:min(n_pop, 9)]
+  # previous colors used by Rishav - taken from driftsel package
+  # colors = c("#000000", "#FF0000", "#00FF00", "#0000FF", "#FF00FF", 
+  #             "#00FFFF", "#FFA500", "#800080", "#7FFF00")[1:min(n_pop, 9)]
   if (n_pop > 9) {
     colors = rep(colors, ceiling(n_pop / 9))[1:n_pop]
   }

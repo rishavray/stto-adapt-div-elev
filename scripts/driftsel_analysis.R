@@ -1,7 +1,7 @@
 library(tidyverse)
-# Source the nessessary scripts from driftsel source code
-source("../driftsel/rafm/RAFM.r")
-source("../driftsel/driftsel.r")
+# Source the necessary scripts from driftsel source code
+source("rafm/RAFM.r")
+source("driftsel/driftsel.r")
 source("scripts/viz_trait_tidy.R")
 
 geno1 = read.table('data/matrix_split.txt',head=FALSE)
@@ -9,7 +9,7 @@ geno = as.matrix(geno1[,2:ncol(geno1)])
 pos = read.table('data/data.012.pos',head=FALSE)
 ID = read.table('data/data.012.indv',head=FALSE)
 pops = scan("data/pop.txt", what = character())
-climate_data = read.table('climate_pc.csv', head=TRUE, sep = ",", row.names = 1)
+climate_data = read.table('data/climate_pc.csv', head=TRUE, sep = ",", row.names = 1)
 
 pop_num = as.numeric(as.factor(pops))
 
@@ -35,7 +35,7 @@ saveRDS(afm, "data/afm_15000_5000_10.RDS")
 afm = readRDS("data/afm_15000_5000_10.RDS")
 
 
-Y = read.table('merged_traits.csv', head=TRUE, sep = "\t")
+Y = read.table('data/merged_traits.csv', head=TRUE, sep = "\t")
 ped_sto = as.matrix(data.frame(ID = 1:length(pop_num),
     sire = pop_num+1000,
     dam = pop_num+2000,
@@ -55,13 +55,14 @@ traits = as.matrix(Y[c("sla",
 traits_scaled = scale(traits)
 traits_scaled = cbind(1:length(pop_num), traits_scaled)
 
+library(MCMCpack)
 samp = MH(afm$theta, ped_sto, 
     covars_scaled,
     traits_scaled,
     15000, 5000, 10, alt=T)
 
-saveRDS(samp, "samp_new_scaled_no_covar.RDS")
-samp = readRDS("samp_new_scaled_no_covar.RDS")
+saveRDS(samp, "data/samp_new_scaled_no_covar.RDS")
+samp = readRDS("data/samp_new_scaled_no_covar.RDS")
 
 # traits = 1: "sla",
 # 2: "postvern_stem_diam",
@@ -79,12 +80,95 @@ population_labels = c("BH", "CP2", "DPR", "IH", "KC2", "LV1", "LV2", "LV3", "LVT
 "SHA", "SQ1", "SQ3", "TM2", "WL1", "WL2", "WL3", "WV", "YO1", 
 "YO10", "YO11")
 
+# Colors matching the driftsel figures Rishav made:
+c("#000",   "#CF5A6A",  "#7ACC5B",  "#428EDE",   "#6EDFE2",  "#BB27B3",  "#F2A93B",  "#9F9F9F",  "#A1FC4F", "#000",  "#CF596A",  "#7DCE62",  "#4995E1",  "#68DCE0",  "#BC2AB5",  "#F2A93B",  "#9F9F9F", "#88FD20", "#000", "#CC5364")
+
+# "BH"   "CP2"  "DPR"  "IH"   "KC2"  "LV1"  "LV2"  "LV3"  "LVTR" "SHA"  "SQ1"  "SQ3"  "TM2"  "WL1"  "WL2"  "WL3"  "WV"   "YO1"  "YO10" "YO11"
+
+############## Figure 5 #########################################
+source("scripts/viz_trait_tidy.R")
 # Visualize the trait relationship using the custom ggplot function
 # Modify the function in the viz_trait_tidy.R script as needed to make the colors consistent
-p = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
-                      traits = c(1,3), 
+# Traits:
+# 1: SLA
+# 2: stem diam
+# 3: height
+# 4: longest leaf
+# 5: # leaves
+
+# Height, # leaves
+fig5a = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                      traits = c(3,5), 
                       size_param = 0.5, 
-                      plot_title = "Trait Relationships",
+                      #plot_title = "Trait Relationships",
                       population_labels = population_labels,
                       trait_names = trait_names)
-p
+fig5a
+
+# Height, stem diam
+fig5b = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                    traits = c(3,2), 
+                    size_param = 0.5, 
+                    #plot_title = "Trait Relationships",
+                    population_labels = population_labels,
+                    trait_names = trait_names)
+fig5b
+
+# stem diam, # leaves
+fig5c = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                        traits = c(2,5), 
+                        size_param = 0.5, 
+                        #plot_title = "Trait Relationships",
+                        population_labels = population_labels,
+                        trait_names = trait_names)
+fig5c
+
+# Height, SLA
+fig5d = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                        traits = c(3,1), 
+                        size_param = 0.5, 
+                        #plot_title = "Trait Relationships",
+                        population_labels = population_labels,
+                        trait_names = trait_names)
+fig5d
+
+library(cowplot)
+title = ggdraw() + draw_label("Trait relationships from driftsel multivariate analysis", fontface = 'bold', size = 16)
+plot_grid(title, plot_grid(fig5a, fig5b, fig5c, fig5d, labels = c("A", "B", "C", "D"), ncol = 2), ncol = 1, rel_heights = c(0.1, 1.5))
+
+#ggsave("figures/fig5a-d_driftsel_7.28.25.png")
+
+############## Suppl. Figure 2 #########################################
+
+# Height, # leaves
+suppfig2a = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                        traits = c(1,5), 
+                        size_param = 0.5, 
+                        #plot_title = "Trait Relationships",
+                        population_labels = population_labels,
+                        trait_names = trait_names)
+suppfig2a
+
+# Height, stem diam
+suppfig2b = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                        traits = c(3,4), 
+                        size_param = 0.5, 
+                        #plot_title = "Trait Relationships",
+                        population_labels = population_labels,
+                        trait_names = trait_names)
+suppfig2b
+
+# stem diam, # leaves
+suppfig2c = viz_traits_tidy(fixedpost, popefpost, Gpost, THpost, 
+                        traits = c(4,5), 
+                        size_param = 0.5, 
+                        #plot_title = "Trait Relationships",
+                        population_labels = population_labels,
+                        trait_names = trait_names)
+suppfig2c
+
+library(cowplot)
+title2 = ggdraw() + draw_label("Trait relationships from driftsel multivariate analysis", fontface = 'bold', size = 16)
+plot_grid(title2, plot_grid(suppfig2a, suppfig2b, suppfig2c, labels = c("A", "B", "C"), ncol = 2), ncol = 1, rel_heights = c(0.3, 1.5))
+
+#ggsave("figures/suppfig2a-c_driftsel_7.28.25.png", width = 10, height = 10)
