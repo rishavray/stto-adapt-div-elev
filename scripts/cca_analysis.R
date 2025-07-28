@@ -50,7 +50,7 @@ vardata_for_plotting = vardata %>%
   mutate(labels = c("leaf thickness", "stem diameter", "height", "length of longest leaf", "number of leaves", "sla", "el", "cwd", "str", "tmx", "ppt", "season length"))
 
 # Use the var data to make the custom plot
-# Change the colour pallete as needed
+# Change the colour palette as needed
 ggplot(vardata_for_plotting, aes(x = x, y = y, colour = col, label = labels))+
 #geom_point(size = 2)+
 geom_segment(aes(x = 0, y = 0, xend = x, yend = y),
@@ -62,5 +62,5 @@ theme_classic()+
 labs(x = "Canonical Variate 1", y = "Canonical Variate 2", title = "Canonical Correlation Analysis")
 
 # save plot
-ggsave("figures/cca_biplot_mixomics.pdf", width = 8, height = 8)
-ggsave("figures/cca_biplot_mixomics.png", width = 8, height = 8)
+#ggsave("figures/cca_biplot_mixomics.pdf", width = 8, height = 8)
+#ggsave("figures/cca_biplot_mixomics.png", width = 8, height = 8)
