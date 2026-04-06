@@ -39,4 +39,12 @@ p <- plot_data |>
                       expand = c(0, 0)) +
     geom_vline(xintercept = c(region_labels$end[-nrow(region_labels)] + 0.5),
               linetype = "dashed", color = "white", size = 1)
-  
+
+cv = read_tsv("data/CV.out.txt")
+
+cv |>
+ggplot(aes(x = as.factor(K), y = Value, group = 1)) +
+geom_point(size = 3) +
+geom_line() +
+theme_bw() +
+labs(x = "K value", y = "CV error")
